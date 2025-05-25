@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat App UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 400px;
+      background: #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #4A90E2;
+      padding: 15px;
+      color: white;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .message.user {
+      background: #DCF8C6;
+      align-self: flex-end;
+    }
+
+    .message.bot {
+      background: #eee;
+      align-self: flex-start;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .chat-input button {
+      background: #4A90E2;
+      color: white;
+      border: none;
+      padding: 0 20px;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      background: #357ABD;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">Chat with Bot</div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const messagesContainer = document.getElementById("chat-messages");
+    const userInput = document.getElementById("user-input");
+
+    function appendMessage(text, sender) {
+      const messageEl = document.createElement("div");
+      messageEl.classList.add("message", sender);
+      messageEl.textContent = text;
+      messagesContainer.appendChild(messageEl);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (text === "") return;
+      appendMessage(text, "user");
+      userInput.value = "";
+
+      setTimeout(() => {
+        const botReply = getBotReply(text);
+        appendMessage(botReply, "bot");
+      }, 800);
+    }
+
+    function getBotReply(userText) {
+      const replies = [
+        "That's interesting!",
+        "Tell me more.",
+        "How can I help you?",
+        "Wow, really?",
+        "Nice to hear from you!",
+        "I'm just a bot, but I care 😄"
+      ];
+      return replies[Math.floor(Math.random() * replies.length)];
+    }
+
+    // Optional: send on Enter key
+    userInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
