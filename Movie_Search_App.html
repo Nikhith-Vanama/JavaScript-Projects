@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Search App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    #searchForm {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      margin-left: 5px;
+      border: none;
+      background: #e50914;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .movie-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .movie {
+      background: #222;
+      border-radius: 10px;
+      padding: 10px;
+      width: 200px;
+      text-align: center;
+    }
+    .movie img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .movie h3 {
+      margin: 10px 0 5px;
+      font-size: 18px;
+    }
+    .movie p {
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 Movie Search App</h1>
+  <div id="searchForm">
+    <input type="text" id="searchInput" placeholder="Search for movies..." />
+    <button onclick="searchMovies()">Search</button>
+  </div>
+
+  <div class="movie-container" id="movieContainer"></div>
+
+  <script>
+    const API_KEY = 'YOUR_API_KEY'; // Replace with your actual API key
+
+    function searchMovies() {
+      const query = document.getElementById('searchInput').value.trim();
+      const movieContainer = document.getElementById('movieContainer');
+      movieContainer.innerHTML = '';
+
+      if (query === '') {
+        alert("Please enter a movie name.");
+        return;
+      }
+
+      fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.Response === "True") {
+            data.Search.forEach(movie => {
+              const movieEl = document.createElement('div');
+              movieEl.classList.add('movie');
+              movieEl.innerHTML = `
+                <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/200x300?text=No+Image'}" alt="${movie.Title}">
+                <h3>${movie.Title}</h3>
+                <p>Year: ${movie.Year}</p>
+              `;
+              movieContainer.appendChild(movieEl);
+            });
+          } else {
+            movieContainer.innerHTML = `<p>No results found.</p>`;
+          }
+        })
+        .catch(err => {
+          console.error("Fetch error:", err);
+          movieContainer.innerHTML = `<p>Something went wrong.</p>`;
+        });
+    }
+  </script>
+
+</body>
+</html>
