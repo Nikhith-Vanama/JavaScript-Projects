@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GitHub Profile Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      text-align: center;
+      padding: 50px;
+    }
+
+    #search {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #24292e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    #profile {
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    #profile img {
+      border-radius: 50%;
+      width: 100px;
+    }
+
+    #repos {
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .repo {
+      background: #e1e4e8;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .repo a {
+      text-decoration: none;
+      color: #0366d6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>GitHub Profile Finder</h1>
+
+  <div id="search">
+    <input type="text" id="username" placeholder="Enter GitHub username" />
+    <button onclick="getUser()">Search</button>
+  </div>
+
+  <div id="profile"></div>
+
+  <script>
+    async function getUser() {
+      const username = document.getElementById('username').value;
+      const profile = document.getElementById('profile');
+
+      if (!username) {
+        profile.innerHTML = "<p>Please enter a username.</p>";
+        return;
+      }
+
+      try {
+        const userRes = await fetch(`https://api.github.com/users/${username}`);
+        if (!userRes.ok) throw new Error("User not found");
+
+        const userData = await userRes.json();
+
+        const reposRes = await fetch(userData.repos_url);
+        const repos = await reposRes.json();
+
+        profile.innerHTML = `
+          <img src="${userData.avatar_url}" alt="${userData.name}" />
+          <h2>${userData.name || userData.login}</h2>
+          <p>${userData.bio || "No bio available"}</p>
+          <p>Followers: ${userData.followers} | Following: ${userData.following}</p>
+          <p>Public Repos: ${userData.public_repos}</p>
+
+          <div id="repos">
+            <h3>Repositories:</h3>
+            ${repos.slice(0, 5).map(repo => `
+              <div class="repo">
+                <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (error) {
+        profile.innerHTML = `<p>Error: ${error.message}</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
