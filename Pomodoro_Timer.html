@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pomodoro Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .timer {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #time {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    .work { background: #28a745; color: #fff; }
+    .break { background: #17a2b8; color: #fff; }
+    .start { background: #007bff; color: #fff; }
+    .reset { background: #dc3545; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="timer">
+    <h1>Pomodoro Timer</h1>
+    <div id="time">25:00</div>
+    <button class="work" onclick="setMode('work')">Work</button>
+    <button class="break" onclick="setMode('break')">Break</button>
+    <br/>
+    <button class="start" onclick="startTimer()">Start</button>
+    <button class="reset" onclick="resetTimer()">Reset</button>
+  </div>
+
+  <script>
+    let time = 25 * 60;
+    let countdown;
+    let isRunning = false;
+
+    function updateDisplay() {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      document.getElementById('time').textContent =
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function setMode(mode) {
+      clearInterval(countdown);
+      isRunning = false;
+      if (mode === 'work') time = 25 * 60;
+      if (mode === 'break') time = 5 * 60;
+      updateDisplay();
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      countdown = setInterval(() => {
+        if (time > 0) {
+          time--;
+          updateDisplay();
+        } else {
+          clearInterval(countdown);
+          alert("Time's up!");
+          isRunning = false;
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(countdown);
+      isRunning = false;
+      time = 25 * 60;
+      updateDisplay();
+    }
+
+    // Initial display
+    updateDisplay();
+  </script>
+</body>
+</html>
