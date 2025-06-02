@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Typing Speed Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      background: #f4f4f4;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .quote {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .quote span.correct {
+      color: green;
+    }
+
+    .quote span.incorrect {
+      color: red;
+      text-decoration: underline;
+    }
+
+    #inputArea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1.1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .stats {
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Typing Speed Test</h1>
+    <div class="quote" id="quoteDisplay"></div>
+    <textarea id="inputArea" rows="5" placeholder="Start typing here..." oninput="handleInput()"></textarea>
+    <div class="stats">
+      Time: <span id="time">0</span> sec |
+      WPM: <span id="wpm">0</span>
+    </div>
+    <button onclick="startTest()">Restart</button>
+  </div>
+
+  <script>
+    const quotes = [
+      "The quick brown fox jumps over the lazy dog.",
+      "Typing fast and accurately takes practice and patience.",
+      "JavaScript can be fun and powerful for creating web applications."
+    ];
+
+    let quote = "";
+    let startTime;
+    let timerInterval;
+
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    const inputArea = document.getElementById("inputArea");
+    const timeDisplay = document.getElementById("time");
+    const wpmDisplay = document.getElementById("wpm");
+
+    function getRandomQuote() {
+      return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function renderQuote() {
+      quoteDisplay.innerHTML = "";
+      quote.split("").forEach(char => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        quoteDisplay.appendChild(span);
+      });
+    }
+
+    function startTest() {
+      quote = getRandomQuote();
+      renderQuote();
+      inputArea.value = "";
+      inputArea.disabled = false;
+      inputArea.focus();
+      clearInterval(timerInterval);
+      timeDisplay.textContent = 0;
+      wpmDisplay.textContent = 0;
+      startTime = new Date();
+      timerInterval = setInterval(updateTime, 1000);
+    }
+
+    function updateTime() {
+      const elapsed = Math.floor((new Date() - startTime) / 1000);
+      timeDisplay.textContent = elapsed;
+      calculateWPM();
+    }
+
+    function handleInput() {
+      const input = inputArea.value;
+      const quoteChars = quoteDisplay.querySelectorAll("span");
+
+      let correct = true;
+      quoteChars.forEach((char, index) => {
+        const typedChar = input[index];
+        if (typedChar == null) {
+          char.classList.remove("correct", "incorrect");
+          correct = false;
+        } else if (typedChar === char.textContent) {
+          char.classList.add("correct");
+          char.classList.remove("incorrect");
+        } else {
+          char.classList.add("incorrect");
+          char.classList.remove("correct");
+          correct = false;
+        }
+      });
+
+      if (input.length === quote.length && correct) {
+        clearInterval(timerInterval);
+      }
+
+      calculateWPM();
+    }
+
+    function calculateWPM() {
+      const elapsed = Math.floor((new Date() - startTime) / 1000);
+      const wordsTyped = inputArea.value.trim().split(/\s+/).length;
+      const wpm = elapsed > 0 ? Math.round((wordsTyped / elapsed) * 60) : 0;
+      wpmDisplay.textContent = wpm;
+    }
+
+    // Start test on load
+    window.onload = startTest;
+  </script>
+</body>
+</html>
